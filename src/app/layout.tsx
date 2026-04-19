@@ -7,10 +7,13 @@ const geist = Geist({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "Gallery",
   description: "Private photo and video gallery",
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_BASE_URL ?? "https://www.oakwoodclassof2029.com"
+  ),
   openGraph: {
     title: "Gallery",
     description: "Private photo and video gallery",
-    images: [{ url: "/oakwoodlogo.png" }],
+    images: [{ url: "/oakwoodlogo.png", width: 400, height: 400 }],
   },
 };
 
