@@ -7,6 +7,11 @@ const geist = Geist({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "Gallery",
   description: "Private photo and video gallery",
+  openGraph: {
+    title: "Gallery",
+    description: "Private photo and video gallery",
+    images: [{ url: "/oakwoodlogo.png" }],
+  },
 };
 
 export const viewport = {
