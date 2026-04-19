@@ -37,6 +37,8 @@ export default function GalleryClient({ role }: { role: Role }) {
   const [showUploadPanel, setShowUploadPanel] = useState(false);
   const [dragOver, setDragOver] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
+  const [deletePassword, setDeletePassword] = useState("");
+  const [deletePasswordError, setDeletePasswordError] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const fetchMedia = useCallback(async () => {
@@ -122,6 +124,10 @@ export default function GalleryClient({ role }: { role: Role }) {
   }
 
   async function handleDelete(url: string) {
+    if (deletePassword !== "Bacon") {
+      setDeletePasswordError(true);
+      return;
+    }
     const res = await fetch("/api/delete", {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
@@ -132,6 +138,14 @@ export default function GalleryClient({ role }: { role: Role }) {
       if (lightbox?.url === url) setLightbox(null);
     }
     setDeleteConfirm(null);
+    setDeletePassword("");
+    setDeletePasswordError(false);
+  }
+
+  function cancelDelete() {
+    setDeleteConfirm(null);
+    setDeletePassword("");
+    setDeletePasswordError(false);
   }
 
   function handleDrop(e: React.DragEvent) {
@@ -370,10 +384,23 @@ export default function GalleryClient({ role }: { role: Role }) {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80">
           <div className="bg-zinc-900 border border-zinc-700 rounded-xl p-6 max-w-sm w-full">
             <h3 className="font-semibold text-lg mb-2">Delete file?</h3>
-            <p className="text-zinc-400 text-sm mb-6">This action cannot be undone.</p>
+            <p className="text-zinc-400 text-sm mb-4">Enter admin password to confirm.</p>
+            <input
+              type="password"
+              value={deletePassword}
+              onChange={(e) => { setDeletePassword(e.target.value); setDeletePasswordError(false); }}
+              onKeyDown={(e) => e.key === "Enter" && handleDelete(deleteConfirm)}
+              placeholder="Admin password"
+              className={`w-full px-3 py-2 mb-1 rounded-lg bg-zinc-800 border text-sm outline-none focus:border-zinc-500 transition ${deletePasswordError ? "border-red-500" : "border-zinc-700"}`}
+              autoFocus
+            />
+            {deletePasswordError && (
+              <p className="text-red-400 text-xs mb-3">Incorrect password.</p>
+            )}
+            {!deletePasswordError && <div className="mb-4" />}
             <div className="flex gap-3">
               <button
-                onClick={() => setDeleteConfirm(null)}
+                onClick={cancelDelete}
                 className="flex-1 py-2.5 border border-zinc-700 rounded-lg text-sm hover:border-zinc-500 transition"
               >
                 Cancel
